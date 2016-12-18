@@ -2,7 +2,10 @@ class Point(object):
     def __init__(self, row, column, value='', modifiable=False):
         self._row = row
         self._column = column
-        self._value = value if value.strip() else ''
+        if value:
+            self._value = value if value.strip() else ''
+        else:
+            self._value = value
         self._modifiable = modifiable
 
     # getters

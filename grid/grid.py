@@ -1,29 +1,41 @@
-from Point import Point
+from point import Point
+from game import Game
 
-class MetaGrid(type):
-    pass
-
-class Grid(object):
-    __metaclass__ = MetaGrid
-
+class Grid(Game):
     def __init__(self, num_rows, num_columns):
-        if num_rows > 99:
-            num_rows = 99
-        if num_columns > 99:
-            num_rows = 99
-        self._num_rows = num_rows
-        self._num_columns = num_columns
+        try:
+            if int(num_rows) < 2:
+                num_rows = 2
+            elif num_rows > 99:
+                num_rows = 99
+            self._num_rows = num_rows
+
+            if int(num_columns) < 2:
+                num_columns = 2
+            elif num_columns > 99:
+                num_rows = 99
+            self._num_columns = num_columns
+        except Exception as e:
+            self._num_rows = 10
+            self._num_columns = 10
+
         self._grid = self._create_grid()
 
-    def _create_grid(self, initial_cell_value='.'):
+    def _create_grid(self):
         grid = []
         for row_index in range(self._num_rows):
             grid.append([])
             for column_index in range(self._num_columns):
                 grid[-1].append(
-                    Point(row_index, column_index, initial_cell_value)
+                    Point(row_index, column_index, None)
                 )
         return grid
+
+    def is_valid_guess(self, my_point):
+        if self.get_point(my_point).get_value():
+            return False
+        else:
+            return True
 
     def get_vertical_points(self, column=0):
         vertical_points = [row_points[column] for row_points in self._grid]
@@ -32,6 +44,14 @@ class Grid(object):
 
     def get_horizontal_points(self, row=0):
         return self._grid[row]
+
+    def get_empty_points(self):
+        empty_points = []
+        for row in self._grid:
+            for point in row:
+                if not point.get_value():
+                    empty_points.append(point)
+        return empty_points
 
     def output(self, show_indicies=False):
         if show_indicies:
@@ -44,7 +64,7 @@ class Grid(object):
         else:
             grid_string = []
         for row_index, row in enumerate(self._grid):
-            row_values = map(lambda x: x.get_value() if x.get_value() else ' ', row)
+            row_values = map(lambda x: x.get_value() if x.get_value() else '.', row)
             if show_indicies:
                 add_space = ''
                 if len(str(row_index+1)) == 1:
@@ -52,35 +72,36 @@ class Grid(object):
                 grid_string.append(add_space + str(row_index+1) + ' ' + '  '.join(row_values))
             else:
                 grid_string.append(' '.join(row_values))
-        return '\n'.join(grid_string) + '\n'
+        return '\n' + '\n'.join(grid_string) + '\n'
 
     def __repr__(self):
         return self.output()
 
-    def set_user_point(self, ask_value=True):
+    def get_point(self, my_point):
+        return self._grid[my_point.get_row()][my_point.get_column()]
+
+    def get_user_point(self, ask_value=False):
+        value = None
+
         while True:
             try:
                 row = int(raw_input("Row    #: "))
-                column = int(raw_input("Column #:"))
+                column = int(raw_input("Column #: "))
                 if ask_value:
-                    value = raw_input("Value   :")
+                    value = raw_input("Value   : ")
                     if len(value) != 1:
                         continue
-                break
             except Exception as e:
                 continue
 
-            self.set_point(Point(row=row, column=column))
+            return Point(row=row-1, column=column-1, value=value)
+
+    def set_point(self, my_point):
+        self._grid[my_point.get_row()][my_point.get_column()] = my_point
 
     def update_point(self, row, column, value=None):
         if value:
-            self.self._grid[my_point.get_x()][my_point.get_y()].set_value(value)
-
-    def set_point(self, my_point):
-        self._grid[my_point.get_x()][my_point.get_y()] = my_point
-
-    def get_point(self, my_point):
-        return self._grid[my_point.get_x()][my_point.get_y()]
+            self.self._grid[row][column].set_value(value)
 
     def get_value(self, x, y):
         return self._grid[x][y].get_value()
@@ -88,7 +109,6 @@ class Grid(object):
 def main():
     g = Grid(num_rows=10, num_columns=10)
     print g.output(show_indicies=True)
-    print g.get_vertical_points(4)
 
 if __name__ == '__main__':
     main()
