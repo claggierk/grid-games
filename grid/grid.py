@@ -31,16 +31,29 @@ class Grid(Game):
                 )
         return grid
 
-    def is_valid_guess(self, my_point):
+    def is_point_valueless(self, my_point):
         if self.get_point(my_point).get_value():
             return False
         else:
             return True
 
+    def is_point_visible(self, my_point):
+        if self.get_point(my_point).get_visible():
+            return True
+        else:
+            return False
+
+    def get_invisible_points(self):
+        invisible_points = []
+        for row in self._grid:
+            for point in row:
+                if not point.get_visible:
+                    invisible_points.append(point)
+        return invisible_points
+
     def get_vertical_points(self, column=0):
         vertical_points = [row_points[column] for row_points in self._grid]
         return vertical_points
-        # return [row_points[x] for row_points in self._grid]
 
     def get_horizontal_points(self, row=0):
         return self._grid[row]
@@ -53,7 +66,8 @@ class Grid(Game):
                     empty_points.append(point)
         return empty_points
 
-    def output(self, show_indicies=False):
+    def output(self, show_indicies=False, hide_invisible=False):
+        # deal with the top indices line
         if show_indicies:
             if len(self._grid) > 9:
                 one_to_nine = '  '.join([str(num+1) for num in range(9)])
@@ -63,8 +77,13 @@ class Grid(Game):
                 grid_string = ['   ' + '  '.join([str(num+1) for num in range(len(self._grid))])]
         else:
             grid_string = []
+
+        # the grid
         for row_index, row in enumerate(self._grid):
-            row_values = map(lambda x: x.get_value() if x.get_value() else '.', row)
+            if hide_invisible:
+                row_values = map(lambda x: x.get_value() if x.get_value() and x.get_visible() else '.', row)
+            else:
+                row_values = map(lambda x: x.get_value() if x.get_value() else '.', row)
             if show_indicies:
                 add_space = ''
                 if len(str(row_index+1)) == 1:
@@ -72,6 +91,7 @@ class Grid(Game):
                 grid_string.append(add_space + str(row_index+1) + ' ' + '  '.join(row_values))
             else:
                 grid_string.append(' '.join(row_values))
+
         return '\n' + '\n'.join(grid_string) + '\n'
 
     def __repr__(self):
@@ -99,12 +119,25 @@ class Grid(Game):
     def set_point(self, my_point):
         self._grid[my_point.get_row()][my_point.get_column()] = my_point
 
-    def update_point(self, row, column, value=None):
-        if value:
-            self.self._grid[row][column].set_value(value)
+    def illuminate_point(self, my_point):
+        self._grid[my_point.get_row()][my_point.get_column()].set_visible(True)
+
+    def update_point(self, row, column, value=None, visible=None):
+        if value is not None:
+            self._grid[row][column].set_value(value)
+        if visible is not None:
+            self._grid[row][column].set_visible(visible)
 
     def get_value(self, x, y):
         return self._grid[x][y].get_value()
+
+    def get_group_points(self, group_name):
+        group_points = []
+        for row in self._grid:
+            for point in row:
+                if point.get_group() == group_name:
+                    group_points.append(point)
+        return group_points
 
 def main():
     g = Grid(num_rows=10, num_columns=10)
