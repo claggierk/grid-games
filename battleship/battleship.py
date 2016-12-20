@@ -7,13 +7,13 @@ from grid.grid import Grid
 from grid.point import Point, PointXY
 
 class BattleShip(Grid):
-    BOATS_LENGTHS = [2]#, 3, 4, 5, 6]
+    BOATS_LENGTHS = [2, 3, 4, 5, 6]
     BOAT_NAMES = [
         "Patrol Boat",      # 2
-        # "Submarine",        # 3
-        # "Destroyer",        # 4
-        # "Battleship",       # 5
-        # "Aircraft Carrier", # 6
+        "Submarine",        # 3
+        "Destroyer",        # 4
+        "Battleship",       # 5
+        "Aircraft Carrier", # 6
     ]
 
     def __init__(self, num_rows, num_columns):
@@ -126,7 +126,7 @@ class BattleShip(Grid):
                 break
 
 def main():
-    battleship = BattleShip(num_rows=2, num_columns=2)
+    battleship = BattleShip(num_rows=10, num_columns=10)
     battleship.play()
 
 if __name__ == '__main__':
