@@ -13,7 +13,7 @@ class TicTacToe(Grid):
 
     def player_turn(self):
         while True:
-            user_point = self.get_user_point()
+            user_point = self.get_user_input()
             if self.is_point_valueless(user_point):
                 break
             print "Invalid guess; Please provide a valid point."

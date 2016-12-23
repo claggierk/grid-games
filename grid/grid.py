@@ -52,8 +52,8 @@ class Grid(Game):
         return invisible_points
 
     def get_vertical_points(self, column=0):
-        vertical_points = [row_points[column] for row_points in self._grid]
-        return vertical_points
+        vertical_points = [row[column] for row in self._grid]
+        return [point for point in reversed(vertical_points)]
 
     def get_horizontal_points(self, row=0):
         return self._grid[row]
@@ -66,15 +66,15 @@ class Grid(Game):
                     empty_points.append(point)
         return empty_points
 
-    def output(self, show_indicies=False, hide_invisible=False):
+    def output(self, show_column_indicies=False, show_row_indicies=False, show_indicies=False, hide_invisible=False):
         # deal with the top indices line
-        if show_indicies:
+        if show_column_indicies or show_indicies:
             if len(self._grid) > 9:
                 one_to_nine = '  '.join([str(num+1) for num in range(9)])
-                ten_forward = ' '.join([str(num+1) for num in range(9, len(self._grid))])
+                ten_forward = ' '.join([str(num+1) for num in range(9, self._num_columns)])
                 grid_string = ['   ' + one_to_nine + ' ' + ten_forward]
             else:
-                grid_string = ['   ' + '  '.join([str(num+1) for num in range(len(self._grid))])]
+                grid_string = ['   ' + '  '.join([str(num+1) for num in range(self._num_columns)])]
         else:
             grid_string = []
 
@@ -84,11 +84,13 @@ class Grid(Game):
                 row_values = map(lambda x: x.get_value() if x.get_value() and x.get_visible() else '.', row)
             else:
                 row_values = map(lambda x: x.get_value() if x.get_value() else '.', row)
-            if show_indicies:
+            if show_row_indicies or show_indicies:
                 add_space = ''
                 if len(str(row_index+1)) == 1:
                     add_space = ' '
                 grid_string.append(add_space + str(row_index+1) + ' ' + '  '.join(row_values))
+            elif show_column_indicies:
+                grid_string.append('   ' + '  '.join(row_values))
             else:
                 grid_string.append(' '.join(row_values))
 
@@ -100,13 +102,20 @@ class Grid(Game):
     def get_point(self, my_point):
         return self._grid[my_point.get_row()][my_point.get_column()]
 
-    def get_user_point(self, ask_value=False):
+    def get_points(self, my_points):
+        return [self.get_point(my_point) for my_point in my_points]
+
+    def get_user_input(self, ask_row=True, ask_column=True, ask_value=False):
+        row = None
+        column = None
         value = None
 
         while True:
             try:
-                row = int(raw_input("Row    #: "))
-                column = int(raw_input("Column #: "))
+                if ask_row:
+                    row = int(raw_input("Row    #: "))
+                if ask_column:
+                    column = int(raw_input("Column #: "))
                 if ask_value:
                     value = raw_input("Value   : ")
                     if len(value) != 1:
@@ -114,7 +123,15 @@ class Grid(Game):
             except Exception as e:
                 continue
 
+            # obtained valid input
+            break
+
+        if row and column:
             return Point(row=row-1, column=column-1, value=value)
+        elif row:
+            return row
+        elif column:
+            return column
 
     def set_point(self, my_point):
         self._grid[my_point.get_row()][my_point.get_column()] = my_point
