@@ -81,7 +81,7 @@ class Grid(Game):
         # the grid
         for row_index, row in enumerate(self._grid):
             if hide_invisible:
-                row_values = map(lambda x: x.get_value() if x.get_value() and x.get_visible() else '.', row)
+                row_values = map(lambda x: x.get_value() if (x.get_value() and x.get_visible()) else '.', row)
             else:
                 row_values = map(lambda x: x.get_value() if x.get_value() else '.', row)
             if show_row_indicies or show_indicies:
