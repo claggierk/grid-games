@@ -42,12 +42,12 @@ class Memory(Grid):
         while True:
             user_point_one = self.get_user_input()
             if self.get_point(user_point_one).get_value() == Memory.MATCHED_VALUE:
-                print "1Invalid guess; Please provide a valid point."
+                print "Invalid guess; Please provide a valid point."
                 continue
 
             user_point_two = self.get_user_input()
             if self.get_point(user_point_two).get_value() == Memory.MATCHED_VALUE:
-                print "2Invalid guess; Please provide a valid point."
+                print "Invalid guess; Please provide a valid point."
                 continue
 
             break

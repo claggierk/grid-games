@@ -32,7 +32,7 @@ class Point(object):
         return self._modifiable
     def get_group(self):
         return self._group
-    def get_visible(self):
+    def is_visible(self):
         return self._visible
 
     # setters

@@ -35,36 +35,9 @@ class GameOfLife(Grid):
     def is_dead(self, point):
         return not self.is_alive(point)
 
-    def determine_neigbors(self, point):
-        row = point.get_row()
-        row_minus = (row - 1) % self._num_rows
-        row_plus = (row + 1) % self._num_rows
-
-        col = point.get_column()
-        col_minus = (col - 1) % self._num_columns
-        col_plus = (col + 1) % self._num_columns
-
-        # 1 2 3
-        # 4   6
-        # 7 8 9
-        neighbors = [
-            Point(row_minus, col_minus), # 1
-            Point(row_minus, col),       # 2
-            Point(row_minus, col_plus),  # 3
-
-            Point(row, col_minus),       # 4
-            Point(row, col_plus),        # 6
-
-            Point(row_plus, col_minus),  # 7
-            Point(row_plus, col),        # 8
-            Point(row_plus, col_plus),   # 9
-        ]
-
-        return neighbors
-
     def num_live_neighbors(self, point):
         num_alive_neighbors = 0
-        for neighbor in self.determine_neigbors(point):
+        for neighbor in self.get_neigbors(point):
             if self.is_alive(neighbor):
                 num_alive_neighbors += 1
 

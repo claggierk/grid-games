@@ -27,15 +27,12 @@ class Grid(Game):
             grid.append([])
             for column_index in range(self._num_columns):
                 grid[-1].append(
-                    Point(row_index, column_index, None)
+                    Point(row=row_index, column=column_index, value=None)
                 )
         return grid
 
-    def is_point_valueless(self, my_point):
-        if self.get_point(my_point).get_value():
-            return False
-        else:
-            return True
+    def is_none(self, my_point):
+        return self.get_point(my_point).get_value() is None
 
     def is_point_visible(self, my_point):
         if self.get_point(my_point).get_visible():
@@ -81,9 +78,9 @@ class Grid(Game):
         # the grid
         for row_index, row in enumerate(self._grid):
             if hide_invisible:
-                row_values = map(lambda x: x.get_value() if (x.get_value() and x.get_visible()) else '.', row)
+                row_values = map(lambda x: str(x.get_value()) if (x.get_value() is not None and x.is_visible()) else '.', row)
             else:
-                row_values = map(lambda x: x.get_value() if x.get_value() else '.', row)
+                row_values = map(lambda x: str(x.get_value()) if x.get_value() is not None else '.', row)
             if show_row_indicies or show_indicies:
                 add_space = ''
                 if len(str(row_index+1)) == 1:
@@ -155,6 +152,40 @@ class Grid(Game):
                 if point.get_group() == group_name:
                     group_points.append(point)
         return group_points
+
+    def get_neigbors(self, point, boundaries=False):
+        row = point.get_row()
+        row_minus = (row - 1) if boundaries else (row - 1) % self._num_rows
+        row_plus = (row + 1) if boundaries else (row + 1) % self._num_rows
+
+        col = point.get_column()
+        col_minus = (col - 1) if boundaries else (col - 1) % self._num_columns
+        col_plus = (col + 1) if boundaries else (col + 1) % self._num_columns
+
+        # 1 2 3
+        # 4   6
+        # 7 8 9
+        neighbors = [
+            Point(row_minus, col_minus), # 1
+            Point(row_minus, col),       # 2
+            Point(row_minus, col_plus),  # 3
+
+            Point(row, col_minus),       # 4
+            Point(row, col_plus),        # 6
+
+            Point(row_plus, col_minus),  # 7
+            Point(row_plus, col),        # 8
+            Point(row_plus, col_plus),   # 9
+        ]
+
+        neighbor_points = [
+            self.get_point(neighbor)
+            for neighbor in neighbors
+            if (-1 < neighbor.get_row() < self._num_rows) and
+               (-1 < neighbor.get_column() < self._num_columns)
+        ]
+
+        return neighbor_points
 
 def main():
     g = Grid(num_rows=10, num_columns=10)
