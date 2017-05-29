@@ -1,5 +1,6 @@
 import sys
 
+
 class Player(object):
     def __init__(self, name):
         self._name = name
@@ -10,5 +11,5 @@ class Player(object):
 
     @staticmethod
     def quit(name):
-        print "{} quit ... game over :-(".format(name)
+        print("{} quit ... game over :-(".format(name))
         sys.exit()

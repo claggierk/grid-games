@@ -1,8 +1,7 @@
-from Sudoku import Sudoku
-from Point import Point
-import Tkinter
-import ttk
-import tkFont
+from sudoku import Sudoku
+from point import Point
+import tkinter
+from tkinter import font
 
 # TODO
 # 1. what should I do when the game is over?
@@ -20,11 +19,11 @@ class GameGUI(Sudoku):
 
         self._buttons = []
 
-        self.gui_window = Tkinter.Tk()
+        self.gui_window = tkinter.Tk()
         self.gui_window.title("Sudoku")
         self.gui_window.resizable(width=False, height=False)
 
-        self.my_font = tkFont.Font(family="Helvetica", size=36, weight='bold')
+        self.my_font = font.Font(family="Helvetica", size=36, weight='bold')
         self._create_grid_gui()
 
         self.center_window(self.gui_window)
@@ -33,20 +32,20 @@ class GameGUI(Sudoku):
         window.update_idletasks()
         screen_w = window.winfo_screenwidth()
         screen_h = window.winfo_screenheight()
-        print "Screen: {} {}".format(screen_w, screen_h)
+        print("Screen: {} {}".format(screen_w, screen_h))
         window_w = window.winfo_width()
         window_h = window.winfo_height()
-        print "Window: {} {}".format(window_w, window_h)
+        print("Window: {} {}".format(window_w, window_h))
         top_left_x = screen_w/2.0 - window_w/2.0
         top_left_y = screen_h/2.0 - window_h/2.0
-        print "X Y: {} {}".format(top_left_x, top_left_y)
+        print("X Y: {} {}".format(top_left_x, top_left_y))
         window.geometry("+%d+%d" % (top_left_x, top_left_y))
 
     def _create_grid_gui(self):
         for row in range(self.num_rows):
             self._buttons.append([])
             for column in range(self.num_columns):
-                temp_button = Tkinter.Button(
+                temp_button = tkinter.Button(
                     self.gui_window,
                     height=1,
                     width=2,
@@ -71,8 +70,8 @@ class GameGUI(Sudoku):
                     button['bg'] = 'grey'
                     button['state'] = 'normal'
         for point in self.get_points_with_no_options():
-            self._buttons[point.get_x()][point.get_y()]['bg'] = 'red'
-            self._buttons[point.get_x()][point.get_y()]['state'] = 'disabled'
+            self._buttons[point.get_row()][point.get_column()]['bg'] = 'red'
+            self._buttons[point.get_row()][point.get_column()]['state'] = 'disabled'
 
     def disable_all_buttons(self):
         for row_buttons in self._buttons:
@@ -95,8 +94,8 @@ class GameGUI(Sudoku):
 
     def _create_number_options(self):
         for column_num, available_number in enumerate(self.current_available_string_numbers):
-            print "available_number:", available_number
-            temp_button = Tkinter.Button(
+            print("available_number:", available_number)
+            temp_button = tkinter.Button(
                 self.select_number_window,
                 height=5,
                 width=10,
@@ -111,12 +110,12 @@ class GameGUI(Sudoku):
         self.disable_all_buttons()
         self.current_row_num = row_num
         self.current_column_num = column_num
-        print "row num:", self.current_row_num
-        print "col num:", self.current_column_num
-        print ""
+        print("row num:", self.current_row_num)
+        print("col num:", self.current_column_num)
+        print("")
 
         self._buttons[self.current_row_num][self.current_column_num]['bg'] = 'blue'
-        print "CURRENT VALUE:", self.get_point(Point(self.current_row_num, self.current_column_num)).get_value()
+        print("CURRENT VALUE:", self.get_point(Point(self.current_row_num, self.current_column_num)).get_value())
         if self.get_point(Point(self.current_row_num, self.current_column_num)).get_value():
             self.set_point(Point(x=self.current_row_num, y=self.current_column_num, value='', modifiable=True))
             self._buttons[self.current_row_num][self.current_column_num]['text'] = ''
@@ -130,14 +129,14 @@ class GameGUI(Sudoku):
             self.current_available_string_numbers.append(available_number)
         self.current_available_string_numbers.sort()
 
-        self.select_number_window = Tkinter.Tk()
+        self.select_number_window = tkinter.Tk()
         self.select_number_window.title("Choose a number!")
         self._create_number_options()
         self.center_window(self.select_number_window)
 
 def main():
     game_gui = GameGUI(Sudoku.SQUARE_SIDE, Sudoku.SQUARE_SIDE)
-    Tkinter.mainloop()
+    tkinter.mainloop()
 
 if __name__ == '__main__':
     main()

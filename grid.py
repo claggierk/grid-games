@@ -1,6 +1,7 @@
 from point import Point
 from game import Game
 
+
 class Grid(Game):
     def __init__(self, num_rows, num_columns):
         try:
@@ -110,11 +111,11 @@ class Grid(Game):
         while True:
             try:
                 if ask_row:
-                    row = int(raw_input("Row    #: "))
+                    row = int(input("Row    #: "))
                 if ask_column:
-                    column = int(raw_input("Column #: "))
+                    column = int(input("Column #: "))
                 if ask_value:
-                    value = raw_input("Value   : ")
+                    value = input("Value   : ")
                     if len(value) != 1:
                         continue
             except Exception as e:
@@ -153,7 +154,7 @@ class Grid(Game):
                     group_points.append(point)
         return group_points
 
-    def get_neigbors(self, point, boundaries=False):
+    def get_neighbors(self, point, boundaries=False):
         row = point.get_row()
         row_minus = (row - 1) if boundaries else (row - 1) % self._num_rows
         row_plus = (row + 1) if boundaries else (row + 1) % self._num_rows
@@ -166,16 +167,16 @@ class Grid(Game):
         # 4   6
         # 7 8 9
         neighbors = [
-            Point(row_minus, col_minus), # 1
-            Point(row_minus, col),       # 2
-            Point(row_minus, col_plus),  # 3
+            Point(row_minus, col_minus),  # 1
+            Point(row_minus, col),        # 2
+            Point(row_minus, col_plus),   # 3
 
-            Point(row, col_minus),       # 4
-            Point(row, col_plus),        # 6
+            Point(row, col_minus),        # 4
+            Point(row, col_plus),         # 6
 
-            Point(row_plus, col_minus),  # 7
-            Point(row_plus, col),        # 8
-            Point(row_plus, col_plus),   # 9
+            Point(row_plus, col_minus),   # 7
+            Point(row_plus, col),         # 8
+            Point(row_plus, col_plus),    # 9
         ]
 
         neighbor_points = [
@@ -187,9 +188,10 @@ class Grid(Game):
 
         return neighbor_points
 
+
 def main():
     g = Grid(num_rows=10, num_columns=10)
-    print g.output(show_indicies=True)
+    print(g.output(show_indicies=True))
 
 if __name__ == '__main__':
     main()

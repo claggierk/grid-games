@@ -6,7 +6,7 @@ class Game(object):
         pass
 
     def is_invalid_guess(self):
-        return not self(is_valid_guess)
+        return not self.is_valid_guess()
 
     def is_game_over(self):
         pass
@@ -15,4 +15,4 @@ class Game(object):
         pass
 
 if __name__ == '__main__':
-    print "Game (generic) main"
+    print("Game (generic) main")

@@ -1,15 +1,11 @@
-from Grid import Grid, MetaGrid
-from Game import Game, MetaGame
-from Point import Point
+from grid import Grid
+from game import Game
+from point import Point
 
 ZERO_TO_NINE_SET = set([str(num+1) for num in range(9)])
 
-class MetaSudoku(MetaGrid, MetaGame):
-    pass
 
 class Sudoku(Grid, Game):
-    __metaclass__ = MetaSudoku
-
     SQUARE_SIDE = 9
     MINI_SQUARE_SIDE = 3
     point_to_grid_3x3_index = {}
@@ -36,20 +32,20 @@ class Sudoku(Grid, Game):
         mini_square_index = 0
 
         # big grid 3 row
-        for x1 in xrange(Sudoku.MINI_SQUARE_SIDE):
+        for x1 in range(Sudoku.MINI_SQUARE_SIDE):
             row_cell_numbers = []
 
             mini_square_offset = x1 * Sudoku.MINI_SQUARE_SIDE
             # big grid 3 column
-            for x2 in xrange(Sudoku.MINI_SQUARE_SIDE):
+            for x2 in range(Sudoku.MINI_SQUARE_SIDE):
                 x = (x1 * Sudoku.MINI_SQUARE_SIDE) + x2
 
                 mini_square_index = mini_square_offset
                 # mini grid 3 row
-                for y1 in xrange(Sudoku.MINI_SQUARE_SIDE):
+                for y1 in range(Sudoku.MINI_SQUARE_SIDE):
 
                     # mini grid 3 column
-                    for y2 in xrange(Sudoku.MINI_SQUARE_SIDE):
+                    for y2 in range(Sudoku.MINI_SQUARE_SIDE):
                         y = (y1 * Sudoku.MINI_SQUARE_SIDE) + y2
                         # print "Cell={}, {} <---> Mini-Square={}".format(x, y, mini_square_index)
 
@@ -66,17 +62,17 @@ class Sudoku(Grid, Game):
 
                 mini_square_index += 1
         if output:
-            print " Point to Grid #:"
-            for x, cells in Sudoku.point_to_grid_3x3_index.iteritems():
-                for y, grid in cells.iteritems():
-                    print "    {},{} --> {}".format(x, y, grid)
+            print(" Point to Grid #:")
+            for x, cells in Sudoku.point_to_grid_3x3_index.items():
+                for y, grid in cells.items():
+                    print("    {},{} --> {}".format(x, y, grid))
 
-            print ""
-            print " Grid to Points:"
-            for grid_index, points in Sudoku.grid_3x3_index_to_points.iteritems():
-                print "    Grid {}".format(grid_index)
+            print("")
+            print(" Grid to Points:")
+            for grid_index, points in Sudoku.grid_3x3_index_to_points.items():
+                print("    Grid {}".format(grid_index))
                 for point in points:
-                    print "       ", point
+                    print("       ", point)
 
     def __init__(self):
         super(Sudoku, self).__init__(Sudoku.SQUARE_SIDE, Sudoku.SQUARE_SIDE)
@@ -108,13 +104,13 @@ class Sudoku(Grid, Game):
         return initial_point_grid
 
     def _get_used_vertical_numbers(self, my_point):
-        return set([point.get_value() for point in self.get_vertical_points(column=my_point.get_y()) if point.get_value().isdigit()])
+        return set([point.get_value() for point in self.get_vertical_points(column=my_point.get_column()) if point.get_value().isdigit()])
 
     def _get_used_horizontal_numbers(self, my_point):
-        return set([point.get_value() for point in self.get_horizontal_points(row=my_point.get_x()) if point.get_value().isdigit()])
+        return set([point.get_value() for point in self.get_horizontal_points(row=my_point.get_row()) if point.get_value().isdigit()])
 
     def _get_local_grid_numbers(self, my_point):
-        grid_index = Sudoku.point_to_grid_3x3_index[my_point.get_x()][my_point.get_y()]
+        grid_index = Sudoku.point_to_grid_3x3_index[my_point.get_row()][my_point.get_column()]
         # print grid_index
         grid_points = Sudoku.grid_3x3_index_to_points[grid_index]
         # print grid_points
@@ -127,16 +123,16 @@ class Sudoku(Grid, Game):
     def get_available_numbers(self, x, y):
         my_point = Point(x, y)
         used_vertical_numbers = self._get_used_vertical_numbers(my_point)
-        print "used_vertical_numbers:", used_vertical_numbers
-        used_horizonal_numbers = self._get_used_horizontal_numbers(my_point)
-        print "used_horizonal_numbers:", used_horizonal_numbers
+        print("used_vertical_numbers:", used_vertical_numbers)
+        used_horizontal_numbers = self._get_used_horizontal_numbers(my_point)
+        print("used_horizontal_numbers:", used_horizontal_numbers)
         used_local_grid_numbers = self._get_local_grid_numbers(my_point)
-        print "used_local_grid_numbers:", used_local_grid_numbers
+        print("used_local_grid_numbers:", used_local_grid_numbers)
 
-        used_numbers = set.union(used_vertical_numbers, used_horizonal_numbers, used_local_grid_numbers)
+        used_numbers = set.union(used_vertical_numbers, used_horizontal_numbers, used_local_grid_numbers)
         available_numbers = ZERO_TO_NINE_SET.difference(used_numbers)
-        print "available_numbers:", available_numbers
-        print ""
+        print("available_numbers:", available_numbers)
+        print("")
         return available_numbers
 
     def get_points_with_no_options(self):
@@ -145,7 +141,7 @@ class Sudoku(Grid, Game):
             for point in row:
                 # it is modifiable and it has no value
                 if point.get_modifiable() and not point.get_value().strip():
-                    available_numbers = self.get_available_numbers(point.get_x(), point.get_y())
+                    available_numbers = self.get_available_numbers(point.get_row(), point.get_column())
                     if not available_numbers:
                         no_option_points.append(point)
         return no_option_points
@@ -156,16 +152,16 @@ class Sudoku(Grid, Game):
             return False
 
         used_vertical_numbers = self._get_used_vertical_numbers(my_point)
-        print 'vertical:', used_vertical_numbers
-        used_horizonal_numbers = self._get_used_horizontal_numbers(my_point)
-        print 'horizontal:', used_horizonal_numbers
+        print('vertical:', used_vertical_numbers)
+        used_horizontal_numbers = self._get_used_horizontal_numbers(my_point)
+        print('horizontal:', used_horizontal_numbers)
         used_local_grid_numbers = self._get_local_grid_numbers(my_point)
-        print 'grid:', used_local_grid_numbers
+        print('grid:', used_local_grid_numbers)
 
-        used_numbers = set.union(used_vertical_numbers, used_horizonal_numbers, used_local_grid_numbers)
-        print 'used_numbers:', used_numbers
+        used_numbers = set.union(used_vertical_numbers, used_horizontal_numbers, used_local_grid_numbers)
+        print('used_numbers:', used_numbers)
         available_numbers = ZERO_TO_NINE_SET.difference(used_numbers)
-        print 'available_numbers:', available_numbers
+        print('available_numbers:', available_numbers)
 
         if my_point.get_value() in available_numbers:
             return False
@@ -174,19 +170,19 @@ class Sudoku(Grid, Game):
     def _get_user_point(self):
         invalid_guess = True
         # while invalid_guess:
-        # x = int(raw_input("X    ="))
-        # y = int(raw_input("Y    ="))
-        # value = int(raw_input("Value="))
+        # x = int(input("X    ="))
+        # y = int(input("Y    ="))
+        # value = int(input("Value="))
         x = 0
         y = 0
         value = '3'
         my_point = Point(x, y, value)
         invalid_guess = self._is_invalid_guess(my_point)
-        print "GUESS:", value
+        print("GUESS:", value)
         if invalid_guess:
-            print "GOOD GUESS"
+            print("GOOD GUESS")
         else:
-            print "BAD GUESS"
+            print("BAD GUESS")
 
         return my_point
 
@@ -201,26 +197,26 @@ class Sudoku(Grid, Game):
         return True
 
     def __repr__(self):
-        print tuple([p.get_value() for p in self.get_horizontal_points(y=8)])
-        print len([p.get_value() for p in self.get_horizontal_points(y=8)])
+        print(tuple([p.get_value() for p in self.get_horizontal_points(row=8)]))
+        print(len([p.get_value() for p in self.get_horizontal_points(row=8)]))
         return \
             "             Column Index\n"\
             "     _0_1_2___3_4_5___6_7_8__\n"\
-            "  0 | {} {} {} | {} {} {} | {} {} {} |\n".format(*[p.get_value() if p.get_value() else ' ' for p in self.get_horizontal_points(y=0)]) +\
-            "R 1 | {} {} {} | {} {} {} | {} {} {} |\n".format(*[p.get_value() if p.get_value() else ' ' for p in self.get_horizontal_points(y=1)]) +\
-            "o 2 | {} {} {} | {} {} {} | {} {} {} |\n".format(*[p.get_value() if p.get_value() else ' ' for p in self.get_horizontal_points(y=2)]) +\
+            "  0 | {} {} {} | {} {} {} | {} {} {} |\n".format(*[p.get_value() if p.get_value() else ' ' for p in self.get_horizontal_points(row=0)]) +\
+            "R 1 | {} {} {} | {} {} {} | {} {} {} |\n".format(*[p.get_value() if p.get_value() else ' ' for p in self.get_horizontal_points(row=1)]) +\
+            "o 2 | {} {} {} | {} {} {} | {} {} {} |\n".format(*[p.get_value() if p.get_value() else ' ' for p in self.get_horizontal_points(row=2)]) +\
             "w   -------------------------\n"\
-            "  3 | {} {} {} | {} {} {} | {} {} {} |\n".format(*[p.get_value() if p.get_value() else ' ' for p in self.get_horizontal_points(y=3)]) +\
-            "I 4 | {} {} {} | {} {} {} | {} {} {} |\n".format(*[p.get_value() if p.get_value() else ' ' if p.get_value() else ' ' for p in self.get_horizontal_points(y=4)]) +\
-            "n 5 | {} {} {} | {} {} {} | {} {} {} |\n".format(*[p.get_value() if p.get_value() else ' ' for p in self.get_horizontal_points(y=5)]) +\
+            "  3 | {} {} {} | {} {} {} | {} {} {} |\n".format(*[p.get_value() if p.get_value() else ' ' for p in self.get_horizontal_points(row=3)]) +\
+            "I 4 | {} {} {} | {} {} {} | {} {} {} |\n".format(*[p.get_value() if p.get_value() else ' ' if p.get_value() else ' ' for p in self.get_horizontal_points(row=4)]) +\
+            "n 5 | {} {} {} | {} {} {} | {} {} {} |\n".format(*[p.get_value() if p.get_value() else ' ' for p in self.get_horizontal_points(row=5)]) +\
             "d   -------------------------\n"\
-            "e 6 | {} {} {} | {} {} {} | {} {} {} |\n".format(*[p.get_value() if p.get_value() else ' ' for p in self.get_horizontal_points(y=6)]) +\
-            "x 7 | {} {} {} | {} {} {} | {} {} {} |\n".format(*[p.get_value() if p.get_value() else ' ' for p in self.get_horizontal_points(y=7)]) +\
-            "  8 | {} {} {} | {} {} {} | {} {} {} |\n".format(*[p.get_value() if p.get_value() else ' ' for p in self.get_horizontal_points(y=8)])
+            "e 6 | {} {} {} | {} {} {} | {} {} {} |\n".format(*[p.get_value() if p.get_value() else ' ' for p in self.get_horizontal_points(row=6)]) +\
+            "x 7 | {} {} {} | {} {} {} | {} {} {} |\n".format(*[p.get_value() if p.get_value() else ' ' for p in self.get_horizontal_points(row=7)]) +\
+            "  8 | {} {} {} | {} {} {} | {} {} {} |\n".format(*[p.get_value() if p.get_value() else ' ' for p in self.get_horizontal_points(row=8)])
 
 def main():
     s = Sudoku()
-    print s
+    print(s)
     s.player_turn()
 
 if __name__ == '__main__':
