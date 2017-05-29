@@ -1,6 +1,6 @@
-import Tkinter
+import tkinter
 
-gui_window = Tkinter.Tk()
+gui_window = tkinter.Tk()
 
 class GameGUI():
     def __init__(self, num_rows, num_columns):
@@ -15,8 +15,8 @@ class GameGUI():
         for row in range(self.num_rows):
             self._buttons.append([])
             for column in range(self.num_columns):
-                # temp_button = Tkinter.Button(gui_window)
-                temp_button = Tkinter.Button(
+                # temp_button = tkinter.Button(gui_window)
+                temp_button = tkinter.Button(
                     gui_window,
                     height=10,
                     width=10,
@@ -29,7 +29,7 @@ class GameGUI():
                 self._buttons[-1].append(temp_button)
 
         # quit button
-        Tkinter.Button(
+        tkinter.Button(
             gui_window,
             fg='red',
             bg='green',
@@ -53,7 +53,7 @@ def main():
     TIC_TAC_TOE_NUM_ROWS = 3
     TIC_TAC_TOE_NUM_COLUMNS = 3
     game_gui = GameGUI(TIC_TAC_TOE_NUM_ROWS, TIC_TAC_TOE_NUM_COLUMNS)
-    Tkinter.mainloop()
+    tkinter.mainloop()
 
 if __name__ == '__main__':
     main()
