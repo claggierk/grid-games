@@ -23,7 +23,7 @@ class GameGUI(Sudoku):
         self.gui_window.title("Sudoku")
         self.gui_window.resizable(width=False, height=False)
 
-        self.my_font = font.Font(family="Helvetica", size=36, weight='bold')
+        self.my_font = font.Font(family="Helvetica", size=24, weight='bold')
         self._create_grid_gui()
 
         self.center_window(self.gui_window)
@@ -47,13 +47,14 @@ class GameGUI(Sudoku):
             for column in range(self.num_columns):
                 temp_button = tkinter.Button(
                     self.gui_window,
-                    height=1,
+                    height=2,
                     width=2,
                     font=self.my_font,
                     text=self._grid[row][column].get_value(),
                     state='normal' if self._grid[row][column].get_modifiable() else 'disabled',
                     command=lambda x=row, y=column: self.button_clicked(x, y),
                     bg='grey' if self._grid[row][column].get_modifiable() else 'white',
+                    highlightbackground='grey' if self._grid[row][column].get_modifiable() else 'white',
                 )
                 # http://stackoverflow.com/questions/35412290/change-button-colour-when-hovering-over-with-tkinter
                 # if self._grid[row][column].get_modifiable():
@@ -66,11 +67,13 @@ class GameGUI(Sudoku):
     def process_red_buttons(self):
         for row_buttons in self._buttons:
             for button in row_buttons:
-                if button['bg'] == 'red' and button['state'] == 'disabled':
+                if button['bg'] == 'red' and button['highlightbackground'] == 'red' and button['state'] == 'disabled':
                     button['bg'] = 'grey'
+                    button['highlightbackground'] = 'grey'
                     button['state'] = 'normal'
         for point in self.get_points_with_no_options():
             self._buttons[point.get_row()][point.get_column()]['bg'] = 'red'
+            self._buttons[point.get_row()][point.get_column()]['highlightbackground'] = 'red'
             self._buttons[point.get_row()][point.get_column()]['state'] = 'disabled'
 
     def disable_all_buttons(self):
@@ -88,6 +91,7 @@ class GameGUI(Sudoku):
         self.set_point(Point(self.current_row_num, self.current_column_num, self.current_available_string_numbers[column], True))
         self._buttons[self.current_row_num][self.current_column_num]['text'] = self.current_available_string_numbers[column]
         self._buttons[self.current_row_num][self.current_column_num]['bg'] = 'green'
+        self._buttons[self.current_row_num][self.current_column_num]['highlightbackground'] = 'green'
         self.select_number_window.destroy()
 
         self.process_red_buttons()
@@ -115,9 +119,10 @@ class GameGUI(Sudoku):
         print("")
 
         self._buttons[self.current_row_num][self.current_column_num]['bg'] = 'blue'
+        self._buttons[self.current_row_num][self.current_column_num]['highlightbackground'] = 'blue'
         print("CURRENT VALUE:", self.get_point(Point(self.current_row_num, self.current_column_num)).get_value())
         if self.get_point(Point(self.current_row_num, self.current_column_num)).get_value():
-            self.set_point(Point(x=self.current_row_num, y=self.current_column_num, value='', modifiable=True))
+            self.set_point(Point(row=self.current_row_num, column=self.current_column_num, value='', modifiable=True))
             self._buttons[self.current_row_num][self.current_column_num]['text'] = ''
             self.process_red_buttons()
             self.enable_all_modifiable_buttons_buttons()
