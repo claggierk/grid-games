@@ -64,13 +64,15 @@ class GameGUI(Sudoku):
 
                 self._buttons[-1].append(temp_button)
 
-    def process_red_buttons(self):
+    def grey_dated_optionless_buttons(self):
         for row_buttons in self._buttons:
             for button in row_buttons:
-                if button['bg'] == 'red' and button['highlightbackground'] == 'red' and button['state'] == 'disabled':
+                if button['bg'] == 'red' and button['highlightbackground'] == 'red':
                     button['bg'] = 'grey'
                     button['highlightbackground'] = 'grey'
                     button['state'] = 'normal'
+
+    def disable_optionless_buttons(self):
         for point in self.get_points_with_no_options():
             self._buttons[point.get_row()][point.get_column()]['bg'] = 'red'
             self._buttons[point.get_row()][point.get_column()]['highlightbackground'] = 'red'
@@ -81,20 +83,20 @@ class GameGUI(Sudoku):
             for button in row_buttons:
                 button['state'] = 'disabled'
 
-    def enable_all_modifiable_buttons_buttons(self):
+    def enable_all_modifiable_buttons(self):
         for row_index, row_buttons in enumerate(self._buttons):
             for col_index, button in enumerate(row_buttons):
                 button['state'] = 'normal' if self.get_point(Point(row_index, col_index)).get_modifiable() else 'disabled'
 
     def column_selected(self, column):
-        self.enable_all_modifiable_buttons_buttons()
         self.set_point(Point(self.current_row_num, self.current_column_num, self.current_available_string_numbers[column], True))
         self._buttons[self.current_row_num][self.current_column_num]['text'] = self.current_available_string_numbers[column]
         self._buttons[self.current_row_num][self.current_column_num]['bg'] = 'green'
         self._buttons[self.current_row_num][self.current_column_num]['highlightbackground'] = 'green'
         self.select_number_window.destroy()
-
-        self.process_red_buttons()
+        self.enable_all_modifiable_buttons()
+        self.grey_dated_optionless_buttons()
+        self.disable_optionless_buttons()
 
     def _create_number_options(self):
         for column_num, available_number in enumerate(self.current_available_string_numbers):
@@ -110,6 +112,12 @@ class GameGUI(Sudoku):
             )
             temp_button.grid(row=1, column=column_num)
 
+    def on_closing(self):
+        self._buttons[self.current_row_num][self.current_column_num]['bg'] = 'grey'
+        self._buttons[self.current_row_num][self.current_column_num]['highlightbackground'] = 'grey'
+        self.enable_all_modifiable_buttons()
+        self.select_number_window.destroy()
+
     def button_clicked(self, row_num, column_num):
         self.disable_all_buttons()
         self.current_row_num = row_num
@@ -124,8 +132,9 @@ class GameGUI(Sudoku):
         if self.get_point(Point(self.current_row_num, self.current_column_num)).get_value():
             self.set_point(Point(row=self.current_row_num, column=self.current_column_num, value='', modifiable=True))
             self._buttons[self.current_row_num][self.current_column_num]['text'] = ''
-            self.process_red_buttons()
-            self.enable_all_modifiable_buttons_buttons()
+            self.enable_all_modifiable_buttons()
+            self.grey_dated_optionless_buttons()
+            self.disable_optionless_buttons()
             return
         available_numbers_set = self.get_available_numbers(self.current_row_num, self.current_column_num)
 
@@ -135,6 +144,7 @@ class GameGUI(Sudoku):
         self.current_available_string_numbers.sort()
 
         self.select_number_window = tkinter.Tk()
+        self.select_number_window.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.select_number_window.title("Choose a number!")
         self._create_number_options()
         self.center_window(self.select_number_window)
